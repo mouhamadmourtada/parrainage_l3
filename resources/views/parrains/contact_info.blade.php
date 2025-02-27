@@ -7,6 +7,20 @@
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
         <h2 class="text-2xl font-bold mb-6 text-center">Complétez vos informations</h2>
         
+        @if(session('error'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <p class="font-bold">Erreur</p>
+            <p>{{ session('error') }}</p>
+        </div>
+        @endif
+        
+        @if(session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <p class="font-bold">Succès</p>
+            <p>{{ session('success') }}</p>
+        </div>
+        @endif
+        
         <form action="{{ route('parrain.save-contact') }}" method="POST" class="space-y-4">
             @csrf
             
@@ -82,7 +96,9 @@
                     type="tel" 
                     placeholder="7XXXXXXXX"
                     value="{{ old('telephone') }}"
-                    required>
+                    required
+                    x-data="{}"
+                    x-mask="7 99 999 99 99">
                 @error('telephone')
                     <p class="text-red-500 text-xs italic">{{ $message }}</p>
                 @enderror
@@ -103,7 +119,7 @@
                 @enderror
             </div>
 
-            <div class="flex items-center justify-center">
+            <div class="flex items-center justify-center mt-6">
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
                     type="submit">
                     Enregistrer
@@ -113,3 +129,8 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://unpkg.com/@alpinejs/mask@3.x.x/dist/cdn.min.js"></script>
+@endpush

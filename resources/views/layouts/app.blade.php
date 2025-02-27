@@ -6,7 +6,7 @@
     <title>Gestion des Parrainages - @yield('title')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    @livewireStyles
 </head>
 <body class="bg-gray-100">
     <nav class="bg-white shadow-lg">
@@ -39,6 +39,7 @@
         @yield('content')
     </main>
 
+    @livewireScripts
     @stack('scripts')
 </body>
 </html>

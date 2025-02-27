@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('code_authentification')->nullable();
             $table->string('code_validation', 5)->nullable();
-            $table->timestamp('date_inscription');
+            $table->timestamp('date_inscription')->nullable();
             $table->timestamps();
         });
     }
