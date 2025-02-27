@@ -128,7 +128,18 @@ class ParrainageController extends Controller
             ])->withInput();
         }
 
-        // Marquer l'électeur comme authentifié dans la session
+        // Récupérer l'utilisateur associé au parrain et l'authentifier
+        $user = $electeur->parrain->user;
+        
+        if (!$user) {
+            return back()->withErrors([
+                'general' => 'Aucun compte utilisateur n\'est associé à cet électeur.'
+            ])->withInput();
+        }
+        
+        auth()->login($user);
+        
+        // Mettre à jour la session électeur pour les étapes suivantes
         session()->put('electeur_authentifie', true);
         
         return redirect()->route('parrainage.candidats');
@@ -139,7 +150,7 @@ class ParrainageController extends Controller
      */
     public function showCandidats()
     {
-        if (!session()->has('electeur_verification') || !session()->has('electeur_authentifie')) {
+        if (!auth()->check()) {
             return redirect()->route('parrainage.verification')
                 ->with('error', 'Veuillez compléter les étapes précédentes d\'abord.');
         }
@@ -155,10 +166,10 @@ class ParrainageController extends Controller
      */
     public function choisirCandidat(Request $request)
     {
-        if (!session()->has('electeur_verification') || !session()->has('electeur_authentifie')) {
-            return redirect()->route('parrainage.verification')
-                ->with('error', 'Veuillez compléter les étapes précédentes d\'abord.');
-        }
+        // if (!auth()->check()) {
+        //     return redirect()->route('parrainage.verification')
+        //         ->with('error', 'Veuillez compléter les étapes précédentes d\'abord.');
+        // }
 
         $validator = Validator::make($request->all(), [
             'candidat_id' => 'required|exists:candidats,id',
@@ -168,10 +179,13 @@ class ParrainageController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
+        
         // Récupérer les informations de l'électeur et du candidat
-        $electeurData = session()->get('electeur_verification');
+        $user = auth()->user();
+        $parrain = $user->userable;
+        $electeur = $parrain->electeur;
         $candidat = Candidat::find($request->candidat_id);
-
+        
         // Générer un code de confirmation à 5 chiffres
         $codeConfirmation = sprintf('%05d', rand(0, 99999));
         
@@ -182,9 +196,9 @@ class ParrainageController extends Controller
             'candidat_nom' => $candidat->nom,
             'candidat_prenom' => $candidat->prenom,
         ]);
-
+        
         // Envoyer le code par email
-        $this->envoyerCodeConfirmation($electeurData, $codeConfirmation, $candidat);
+        $this->envoyerCodeConfirmation($electeur, $parrain, $codeConfirmation, $candidat);
         
         return redirect()->route('parrainage.confirmation');
     }
@@ -192,18 +206,19 @@ class ParrainageController extends Controller
     /**
      * Envoie le code de confirmation par email
      */
-    private function envoyerCodeConfirmation($electeurData, $code, $candidat)
+    private function envoyerCodeConfirmation($electeur, $parrain, $code, $candidat)
     {
         $data = [
-            'nom' => $electeurData['nom'],
-            'prenom' => $electeurData['prenom'],
+            'nom' => $electeur->nom,
+            'prenom' => $electeur->prenom,
             'code' => $code,
             'candidat_nom' => $candidat->nom,
             'candidat_prenom' => $candidat->prenom,
+            'email' => $parrain->email,
         ];
 
-        Mail::send('emails.code-confirmation', $data, function ($message) use ($electeurData) {
-            $message->to($electeurData['email'])
+        Mail::send('emails.code-confirmation', $data, function ($message) use ($electeur) {
+            $message->to($electeur->parrain->email)
                 ->subject('Code de confirmation de votre parrainage');
         });
     }
@@ -213,7 +228,7 @@ class ParrainageController extends Controller
      */
     public function showConfirmation()
     {
-        if (!session()->has('electeur_verification') || !session()->has('electeur_authentifie') || !session()->has('confirmation_parrainage')) {
+        if (!auth()->check() || !session()->has('confirmation_parrainage')) {
             return redirect()->route('parrainage.verification')
                 ->with('error', 'Veuillez compléter les étapes précédentes d\'abord.');
         }
@@ -228,7 +243,7 @@ class ParrainageController extends Controller
      */
     public function confirmer(Request $request)
     {
-        if (!session()->has('electeur_verification') || !session()->has('electeur_authentifie') || !session()->has('confirmation_parrainage')) {
+        if (!auth()->check() || !session()->has('confirmation_parrainage')) {
             return redirect()->route('parrainage.verification')
                 ->with('error', 'Veuillez compléter les étapes précédentes d\'abord.');
         }
@@ -242,7 +257,9 @@ class ParrainageController extends Controller
         }
 
         $confirmationData = session()->get('confirmation_parrainage');
-        $electeurData = session()->get('electeur_verification');
+        $user = auth()->user();
+        $parrain = $user->userable;
+        $electeur = $parrain->electeur;
 
         // Vérifier le code de confirmation
         if ($request->code_confirmation !== $confirmationData['code']) {
@@ -255,25 +272,20 @@ class ParrainageController extends Controller
             DB::beginTransaction();
             
             // Enregistrer le parrainage
-            // $parrainage = DB::table('parrainages')->insert([
-            //     'electeur_id' => $electeurData['id'],
-            //     'candidat_id' => $confirmationData['candidat_id'],
-            //     'date_parrainage' => now(),
-            //     'code_verification' => Str::random(10), // Génère un code de vérification unique
-            // ]);
-            // il faut update parrain pour ajouter candidat_id
-            $parrain = Parrain::where('electeur_id', $electeurData['id'])->first();
+            // $parrain = Parrain::where('numero_electeur', $electeur->numero-)->first();
+            // dd($confirmationData["candidat_id"]);
+
             $parrain->candidat_id = $confirmationData['candidat_id'];
             $parrain->save();
 
-            // Mise à jour du compteur de parrains pour le candidat
-            Candidat::where('id', $confirmationData['candidat_id'])
-                ->increment('nombre_parrains');
+            // // Mise à jour du compteur de parrains pour le candidat
+            // Candidat::where('id', $confirmationData['candidat_id'])
+            //     ->increment('nombre_parrains');
                 
-            DB::commit();
-
+            
             // Envoyer un email de confirmation finale
-            $this->envoyerConfirmationFinale($electeurData, $confirmationData);
+            $this->envoyerConfirmationFinale($electeur, $parrain, $confirmationData);
+            DB::commit();
 
             // Sauvegarder les informations pour la page de succès
             session()->put('parrainage_success', true);
@@ -282,6 +294,7 @@ class ParrainageController extends Controller
             
         } catch (\Exception $e) {
             DB::rollBack();
+            dd($e);
             return back()->withErrors([
                 'general' => 'Une erreur est survenue lors de l\'enregistrement de votre parrainage. Veuillez réessayer.'
             ])->withInput();
@@ -291,18 +304,18 @@ class ParrainageController extends Controller
     /**
      * Envoie l'email de confirmation finale
      */
-    private function envoyerConfirmationFinale($electeurData, $confirmationData)
+    private function envoyerConfirmationFinale($electeur, $parrain, $confirmationData)
     {
         $data = [
-            'nom' => $electeurData['nom'],
-            'prenom' => $electeurData['prenom'],
+            'nom' => $electeur->nom,
+            'prenom' => $electeur->prenom,
             'candidat_nom' => $confirmationData['candidat_nom'],
             'candidat_prenom' => $confirmationData['candidat_prenom'],
             'date' => now()->format('d/m/Y H:i'),
         ];
 
-        Mail::send('emails.confirmation-parrainage', $data, function ($message) use ($electeurData) {
-            $message->to($electeurData['email'])
+        Mail::send('emails.confirmation-parrainage', $data, function ($message) use ($electeur, $parrain) {
+            $message->to($parrain->email)
                 ->subject('Confirmation de votre parrainage');
         });
     }
@@ -312,19 +325,25 @@ class ParrainageController extends Controller
      */
     public function showSuccess()
     {
-        if (!session()->has('electeur_verification') || !session()->has('electeur_authentifie') || !session()->has('parrainage_success')) {
+        if (!auth()->check() || !session()->has('parrainage_success')) {
             return redirect()->route('parrainage.verification')
                 ->with('error', 'Veuillez compléter le processus de parrainage d\'abord.');
         }
 
-        $electeurData = session()->get('electeur_verification');
+        $electeur = auth()->user();
         $confirmationData = session()->get('confirmation_parrainage');
 
-        // Nettoyer les données de session après le succès
-        session()->forget(['electeur_verification', 'electeur_authentifie', 'confirmation_parrainage', 'parrainage_success']);
+        // Nettoyer les données de session et déconnecter l'utilisateur
+        auth()->logout();
+        session()->forget(['confirmation_parrainage', 'parrainage_success', 'electeur_verification']);
         
         return view('parrainage.succes', [
-            'electeur' => $electeurData,
+            'electeur' => [
+                'nom' => $electeur->nom,
+                'prenom' => $electeur->prenom,
+                'email' => $electeur->email,
+                'bureau_vote' => $electeur->bureau_vote,
+            ],
             'candidat' => $confirmationData,
         ]);
     }

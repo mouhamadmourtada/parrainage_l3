@@ -148,8 +148,12 @@ class ParrainController extends Controller
                 
 
                 // Envoyer l'e-mail d'activation du compte
-                $this->mailingService->envoyerMailActivationCompte($parrain, $electeurInfo['cin']);
+                $good = $this->mailingService->envoyerMailActivationCompte($parrain, $electeurInfo['cin']);
                 
+                if (!$good) {
+                    throw new \Exception("Erreur lors de l'envoi de l'e-mail d'activation.");
+                }
+
                 DB::commit();
                 
                 // Stocker les identifiants en session pour la page de succès
@@ -163,12 +167,14 @@ class ParrainController extends Controller
                 return redirect()->route('parrain.activation.success');
             } catch (\Exception $e) {
                 DB::rollBack();
-                dd($e);
                 throw $e;
             }
         } catch (ValidationException $e) {
+            dd($e);
+
             return back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
+            dd($e);
             return back()->withErrors([
                 'general' => "Une erreur est survenue lors de l'enregistrement. Veuillez réessayer."
             ])->withInput();

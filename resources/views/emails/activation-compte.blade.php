@@ -61,7 +61,6 @@
         
         <div class="credentials">
             <!-- <p><strong>Identifiant :</strong> {{ $username }}</p> -->
-            <!-- <p><strong>Mot de passe :</strong> {{ $password }}</p> -->
             <p><strong>Code d'authentification :</strong> <span class="auth-code">{{ $code_authentification }}</span></p>
         </div>
 

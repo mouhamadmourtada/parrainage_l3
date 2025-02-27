@@ -34,6 +34,7 @@ class MailingService
         } catch (\Exception $e) {
             // Logger l'erreur mais ne pas interrompre le flux d'inscription
             \Log::error('Erreur lors de l\'envoi de l\'email d\'activation: ' . $e->getMessage());
+            
             return false;
         }
     }

@@ -38,14 +38,19 @@ Route::prefix('parrainage')->name('parrainage.')->group(function () {
     Route::get('/authentification', [ParrainageController::class, 'showAuthentificationForm'])->name('authentification');
     Route::post('/authentifier', [ParrainageController::class, 'authentifier'])->name('authentifier');
     
-    // Étape 3: Choix du candidat
-    Route::get('/candidats', [ParrainageController::class, 'showCandidats'])->name('candidats');
-    Route::post('/choisir-candidat', [ParrainageController::class, 'choisirCandidat'])->name('choisir.candidat');
-    
-    // Étape 4: Confirmation par code à usage unique
-    Route::get('/confirmation', [ParrainageController::class, 'showConfirmation'])->name('confirmation');
-    Route::post('/confirmer', [ParrainageController::class, 'confirmer'])->name('confirmer');
-    
-    // Étape 5: Succès
-    Route::get('/succes', [ParrainageController::class, 'showSuccess'])->name('succes');
+    // Routes protégées par middleware auth
+    Route::middleware('auth')->group(function() {
+        // Étape 3: Choix du candidat
+        Route::get('/candidats', [ParrainageController::class, 'showCandidats'])->name('candidats');
+        Route::post('/choisir-candidat', [ParrainageController::class, 'choisirCandidat'])->name('choisir.candidat');
+        
+        // Étape 4: Confirmation par code à usage unique
+        Route::get('/confirmation', [ParrainageController::class, 'showConfirmation'])->name('confirmation');
+        Route::post('/confirmer', [ParrainageController::class, 'confirmer'])->name('confirmer');
+        
+        // Étape 5: Succès
+        Route::get('/succes', [ParrainageController::class, 'showSuccess'])->name('succes');
+    });
 });
+
+// Suppression des routes dupliquées qui ont été ajoutées précédemment
