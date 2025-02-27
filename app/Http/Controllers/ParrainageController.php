@@ -44,7 +44,7 @@ class ParrainageController extends Controller
         }
 
         // Vérifier si l'électeur existe dans la base de données
-        $electeur = Electeur::where('numero_carte_electeur', $request->numero_electeur)
+        $electeur = Electeur::where('numero_electeur', $request->numero_electeur)
             ->where('cin', $request->cin)
             ->first();
 
@@ -55,9 +55,14 @@ class ParrainageController extends Controller
         }
 
         // Vérifier si l'électeur a déjà parrainé un candidat
-        $parrainage = DB::table('parrainages')
-            ->where('electeur_id', $electeur->id)
-            ->first();
+        // $parrainage = DB::table('parrainages')
+        //     ->where('electeur_id', $electeur->id)
+        //     ->first();
+        // pour le parrainge, il y a un attribit candidat_id dans parrain où on sait si l'electeur a déjà parrainé quelqu'un
+        // $parrain = Parrain::where('numero_electeur', $electeur->numero_electeur)->first();
+        $parrain = $electeur->parrain;
+        
+        $parrainage = $parrain->candidat_id;
 
         if ($parrainage) {
             return back()->withErrors([
@@ -117,7 +122,7 @@ class ParrainageController extends Controller
         // Vérifier le code d'authentification
         $electeur = Electeur::find($electeurData['id']);
         
-        if (!$electeur || $electeur->code_authentification !== $request->code_authentification) {
+        if (!$electeur || $electeur->parrain->code_authentification !== $request->code_authentification) {
             return back()->withErrors([
                 'code_authentification' => 'Le code d\'authentification est incorrect.'
             ])->withInput();
@@ -140,7 +145,7 @@ class ParrainageController extends Controller
         }
 
         // Récupérer tous les candidats actifs
-        $candidats = Candidat::where('actif', true)->get();
+        $candidats = Candidat::all();
         
         return view('parrainage.candidats', compact('candidats'));
     }
@@ -250,12 +255,16 @@ class ParrainageController extends Controller
             DB::beginTransaction();
             
             // Enregistrer le parrainage
-            $parrainage = DB::table('parrainages')->insert([
-                'electeur_id' => $electeurData['id'],
-                'candidat_id' => $confirmationData['candidat_id'],
-                'date_parrainage' => now(),
-                'code_verification' => Str::random(10), // Génère un code de vérification unique
-            ]);
+            // $parrainage = DB::table('parrainages')->insert([
+            //     'electeur_id' => $electeurData['id'],
+            //     'candidat_id' => $confirmationData['candidat_id'],
+            //     'date_parrainage' => now(),
+            //     'code_verification' => Str::random(10), // Génère un code de vérification unique
+            // ]);
+            // il faut update parrain pour ajouter candidat_id
+            $parrain = Parrain::where('electeur_id', $electeurData['id'])->first();
+            $parrain->candidat_id = $confirmationData['candidat_id'];
+            $parrain->save();
 
             // Mise à jour du compteur de parrains pour le candidat
             Candidat::where('id', $confirmationData['candidat_id'])

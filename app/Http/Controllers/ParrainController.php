@@ -146,6 +146,7 @@ class ParrainController extends Controller
                     'date_creation' => now()
                 ]);
                 
+
                 // Envoyer l'e-mail d'activation du compte
                 $this->mailingService->envoyerMailActivationCompte($parrain, $electeurInfo['cin']);
                 
@@ -162,6 +163,7 @@ class ParrainController extends Controller
                 return redirect()->route('parrain.activation.success');
             } catch (\Exception $e) {
                 DB::rollBack();
+                dd($e);
                 throw $e;
             }
         } catch (ValidationException $e) {
