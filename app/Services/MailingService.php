@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Parrain;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class MailingService
 {
@@ -37,5 +38,46 @@ class MailingService
             
             return false;
         }
+    }
+
+    /**
+     * Envoie le code de sécurité au candidat par email et SMS
+     * 
+     * @param string $email Email du candidat
+     * @param string $telephone Numéro de téléphone du candidat
+     * @param string $nom Nom complet du candidat
+     * @param string $code Code de sécurité à envoyer
+     * @return boolean
+     */
+    public function envoyerCodeSecurite(string $email, string $telephone, string $nom, string $code): bool
+    {
+        $success = true;
+
+        // Envoi par email
+        try {
+            $data = [
+                'nom' => $nom,
+                'code' => $code
+            ];
+
+            Mail::send('emails.code-securite-candidat', $data, function ($message) use ($email, $nom) {
+                $message->to($email)
+                    ->subject('Code de sécurité pour votre candidature');
+            });
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'envoi de l\'email avec le code de sécurité: ' . $e->getMessage());
+            $success = false;
+        }
+
+        // Envoi par SMS (à implémenter avec un service SMS tiers)
+        try {
+            // À remplacer par l'implémentation réelle du service SMS
+            Log::info("SMS envoyé au numéro {$telephone} avec le code {$code}");
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'envoi du SMS avec le code de sécurité: ' . $e->getMessage());
+            $success = false;
+        }
+
+        return $success;
     }
 }

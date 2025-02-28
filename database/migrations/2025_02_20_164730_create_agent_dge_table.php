@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('agent_dge', function (Blueprint $table) {
             $table->id();
             $table->string('nom_utilisateur')->unique();
-            $table->string('mot_de_passe_hash');
+            $table->string('password');
             $table->string('nom');
             $table->string('prenom');
             $table->timestamp('date_creation');

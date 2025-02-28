@@ -34,7 +34,7 @@ class CandidatSeeder extends Seeder
             // Créer un compte utilisateur pour le candidat
             \App\Models\User::create([
                 'nom_utilisateur' => 'candidat_' . $electeur->numero_electeur,
-                'mot_de_passe_hash' => bcrypt('password'),
+                'password' => bcrypt('password'),
                 'userable_type' => 'App\Models\Candidat',
                 'userable_id' => $candidat->id,
                 'date_creation' => now(),

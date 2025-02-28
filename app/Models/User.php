@@ -21,7 +21,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'nom_utilisateur',
-        'mot_de_passe_hash',
+        'password',
         'userable_type',
         'userable_id',
         'date_creation',
@@ -33,7 +33,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $hidden = [
-        'mot_de_passe_hash',
+        'password',
         'remember_token',
     ];
 
@@ -44,7 +44,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'date_creation' => 'datetime',
-        'mot_de_passe_hash' => 'hashed',
+        'password' => 'hashed',
     ];
 
     /**
@@ -70,4 +70,19 @@ class User extends Authenticatable
     {
         return true; // Temporairement permettre à tous les utilisateurs d'accéder
     }
+
+
+    // une fonction role qui retourne le role de l'utilisateur, candidat, agentde ou parrain
+    public function role()
+    {
+        // return $this->userable_type;
+        if ($this->userable_type === 'App\Models\AgentDGE') {
+            return 'agentdge';
+        } elseif ($this->userable_type === 'App\Models\Candidat') {
+            return 'candidat';
+        } elseif ($this->userable_type === 'App\Models\Parrain') {
+            return 'parrain';
+        }
+    }
+
 }

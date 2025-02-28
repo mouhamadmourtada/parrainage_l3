@@ -140,7 +140,7 @@ class ParrainController extends Controller
                 // Créer le compte utilisateur
                 $user = User::create([
                     'nom_utilisateur' => $electeurInfo['numero_electeur'],
-                    'mot_de_passe_hash' => Hash::make($electeurInfo['cin']),
+                    'password' => Hash::make($electeurInfo['cin']),
                     'userable_id' => $parrain->id,
                     'userable_type' => Parrain::class,
                     'date_creation' => now()

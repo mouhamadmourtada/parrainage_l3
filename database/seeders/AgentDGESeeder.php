@@ -17,7 +17,7 @@ class AgentDGESeeder extends Seeder
         for ($i = 1; $i <= 5; $i++) {
             $agent = AgentDGE::create([
                 'nom_utilisateur' => 'agent_' . $i,
-                'mot_de_passe_hash' => bcrypt('password'),
+                'password' => bcrypt('password'),
                 'nom' => $faker->lastName(),
                 'prenom' => $faker->firstName(),
                 'date_creation' => now(),
@@ -26,7 +26,7 @@ class AgentDGESeeder extends Seeder
             // Créer un compte utilisateur pour l'agent
             User::create([
                 'nom_utilisateur' => $agent->nom_utilisateur,
-                'mot_de_passe_hash' => $agent->mot_de_passe_hash,
+                'password' => $agent->password,
                 'userable_type' => 'App\Models\AgentDGE',
                 'userable_id' => $agent->id,
                 'date_creation' => now(),

@@ -15,7 +15,7 @@ class AgentDGE extends Model
 
     protected $fillable = [
         'nom_utilisateur',
-        'mot_de_passe_hash',
+        'password',
         'nom',
         'prenom',
         'date_creation',

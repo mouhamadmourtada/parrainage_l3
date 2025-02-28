@@ -14,7 +14,7 @@ class AdminUserSeeder extends Seeder
         // Créer un agent DGE admin
         $agent = AgentDGE::create([
             'nom_utilisateur' => 'admin',
-            'mot_de_passe_hash' => bcrypt('passer'),
+            'password' => bcrypt('passer'),
             'nom' => 'Admin',
             'prenom' => 'System',
             'date_creation' => now(),
@@ -23,7 +23,7 @@ class AdminUserSeeder extends Seeder
         // Créer un utilisateur admin lié à l'agent DGE
         User::create([
             'nom_utilisateur' => $agent->nom_utilisateur,
-            'mot_de_passe_hash' => $agent->mot_de_passe_hash,
+            'password' => $agent->password,
             'userable_type' => AgentDGE::class,
             'userable_id' => $agent->id,
             'date_creation' => now(),
