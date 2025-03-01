@@ -25,6 +25,7 @@
                     <div class="ml-6 flex items-center space-x-4">
                         <a href="{{ route('parrain.activation') }}" class="px-4 py-2 border border-blue-600 text-blue-600 rounded-full font-medium hover:bg-blue-50 transition duration-150">Activer mon compte</a>
                         <a href="{{ route('parrainage.verification') }}" class="px-4 py-2 bg-blue-600 text-white rounded-full font-medium hover:bg-blue-700 transition duration-150">Parrainer un candidat</a>
+                        <a href="{{ route('candidat.login') }}" class="px-4 py-2 border border-purple-600 text-purple-600 rounded-full font-medium hover:bg-purple-50 transition duration-150">Espace candidat</a>
                     </div>
                 </div>
                 <div class="md:hidden flex items-center">
@@ -46,7 +47,8 @@
                 <a href="#contact" class="block px-3 py-2 text-gray-700 font-medium hover:bg-gray-50">Contact</a>
                 <div class="pt-4 pb-2 border-t border-gray-200">
                     <a href="{{ route('parrain.activation') }}" class="block w-full text-center px-4 py-2 border border-blue-600 text-blue-600 rounded-md font-medium hover:bg-blue-50 mb-2">Activer mon compte</a>
-                    <a href="{{ route('parrainage.verification') }}" class="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700">Parrainer un candidat</a>
+                    <a href="{{ route('parrainage.verification') }}" class="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 mb-2">Parrainer un candidat</a>
+                    <a href="{{ route('candidat.login') }}" class="block w-full text-center px-4 py-2 border border-purple-600 text-purple-600 rounded-md font-medium hover:bg-purple-50">Espace candidat</a>
                 </div>
             </div>
         </div>
@@ -62,6 +64,7 @@
                     <div class="flex flex-wrap gap-4">
                         <a href="{{ route('parrainage.verification') }}" class="px-8 py-3 bg-white text-blue-600 rounded-full font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-1 transition duration-300">Parrainer un candidat</a>
                         <a href="{{ route('parrain.activation') }}" class="px-8 py-3 bg-transparent border-2 border-white text-white rounded-full font-semibold hover:bg-white hover:bg-opacity-10 transform hover:-translate-y-1 transition duration-300">Activer mon compte</a>
+                        <a href="{{ route('candidat.login') }}" class="px-8 py-3 bg-purple-600 text-white rounded-full font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-1 transition duration-300">Espace candidat</a>
                     </div>
                 </div>
                 <div class="hidden lg:flex h-full w-auto justify-center items-center bg-red-900">
@@ -208,6 +211,20 @@
                         </p>
                     </details>
                 </div>
+                
+                <div class="py-6">
+                    <details class="group">
+                        <summary class="flex justify-between items-center font-medium cursor-pointer">
+                            <span class="text-lg">Je suis candidat, comment suivre mes parrainages ?</span>
+                            <span class="transition group-open:rotate-180">
+                                <svg fill="none" height="24" shape-rendering="geometricPrecision" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" width="24"><path d="M6 9l6 6 6-6"></path></svg>
+                            </span>
+                        </summary>
+                        <p class="text-gray-600 mt-3 group-open:animate-fadeIn">
+                            Les candidats enregistrés peuvent accéder à leur espace personnel en cliquant sur "Espace candidat". Connectez-vous avec votre adresse email et le code d'authentification qui vous a été fourni lors de votre enregistrement pour suivre l'évolution quotidienne de vos parrainages.
+                        </p>
+                    </details>
+                </div>
             </div>
         </div>
     </section>
@@ -217,7 +234,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-3xl md:text-4xl font-bold mb-4">Participez au processus démocratique</h2>
             <p class="text-lg mb-8 mx-auto max-w-2xl text-green-100">Votre parrainage compte. Contribuez au processus électoral en parrainant le candidat de votre choix dès maintenant.</p>
-            <a href="{{ route('parrainage.verification') }}" class="inline-block px-8 py-3 bg-white text-green-600 rounded-full font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-1 transition duration-300">Parrainer un candidat</a>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="{{ route('parrainage.verification') }}" class="inline-block px-8 py-3 bg-white text-green-600 rounded-full font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-1 transition duration-300">Parrainer un candidat</a>
+                <a href="{{ route('candidat.login') }}" class="inline-block px-8 py-3 bg-purple-600 text-white rounded-full font-semibold shadow-md hover:shadow-lg transform hover:-translate-y-1 transition duration-300">Accéder à mon espace candidat</a>
+            </div>
         </div>
     </section>
 
@@ -251,6 +271,7 @@
                         <li><a href="#faq" class="text-gray-300 hover:text-white transition duration-150">FAQ</a></li>
                         <li><a href="{{ route('parrain.activation') }}" class="text-gray-300 hover:text-white transition duration-150">Activer mon compte</a></li>
                         <li><a href="{{ route('parrainage.verification') }}" class="text-gray-300 hover:text-white transition duration-150">Parrainer un candidat</a></li>
+                        <li><a href="{{ route('candidat.login') }}" class="text-gray-300 hover:text-white transition duration-150">Espace candidat</a></li>
                     </ul>
                 </div>
                 <div>

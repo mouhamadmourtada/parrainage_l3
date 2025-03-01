@@ -125,3 +125,20 @@ Route::prefix('agent-dge')->name('agent_dge.')->group(function () {
         });
     });
 });
+
+/*
+|--------------------------------------------------------------------------
+| Routes Espace Candidat
+|--------------------------------------------------------------------------
+*/
+
+// Routes pour l'accès des candidats à leur tableau de bord
+Route::prefix('espace-candidat')->group(function () {
+    // Connexion
+    Route::get('/connexion', [App\Http\Controllers\CandidatController::class, 'showLoginForm'])->name('candidat.login');
+    Route::post('/connexion', [App\Http\Controllers\CandidatController::class, 'authenticate'])->name('candidat.authenticate');
+    Route::get('/deconnexion', [App\Http\Controllers\CandidatController::class, 'logout'])->name('candidat.logout');
+    
+    // Tableau de bord (accessible uniquement après connexion)
+    Route::get('/tableau-de-bord', [App\Http\Controllers\CandidatController::class, 'dashboard'])->name('candidat.dashboard');
+});
