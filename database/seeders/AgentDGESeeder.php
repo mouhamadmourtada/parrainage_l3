@@ -30,7 +30,7 @@ class AgentDGESeeder extends Seeder
                 'userable_type' => 'App\Models\AgentDGE',
                 'userable_id' => $agent->id,
                 'date_creation' => now(),
-                'email' => $agent->nom_utilisateur,
+                'email' => 'agent' . $i . "@gmail.com",
             ]);
         }
     }
