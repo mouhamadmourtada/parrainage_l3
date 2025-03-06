@@ -16,7 +16,7 @@ class AgentDGESeeder extends Seeder
         // Créer 5 agents DGE
         for ($i = 1; $i <= 5; $i++) {
             $agent = AgentDGE::create([
-                'nom_utilisateur' => 'agent_' . $i,
+                'nom_utilisateur' => 'agent' . $i . "@gmail.com",
                 'password' => bcrypt('password'),
                 'nom' => $faker->lastName(),
                 'prenom' => $faker->firstName(),
@@ -30,6 +30,7 @@ class AgentDGESeeder extends Seeder
                 'userable_type' => 'App\Models\AgentDGE',
                 'userable_id' => $agent->id,
                 'date_creation' => now(),
+                'email' => $agent->nom_utilisateur,
             ]);
         }
     }
