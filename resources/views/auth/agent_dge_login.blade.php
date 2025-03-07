@@ -43,7 +43,7 @@
     <div class="container">
         <div class="login-container">
             <div class="text-center mb-4 ">
-                <img src="{{ asset('images/logo-dge.png') }}" alt="Logo DGE" class="logo mx-auto" onerror="this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5k4tMW90wj1_cnResA0X32VrQHIHJaZw2Tw&s'">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5k4tMW90wj1_cnResA0X32VrQHIHJaZw2Tw&s" alt="Logo DGE" class="logo mx-auto" >
                 <h2>Direction Générale des Élections</h2>
                 <p class="text-muted">Système de Gestion des Parrainages</p>
             </div>
